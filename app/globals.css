@@ -275,33 +275,28 @@ body {
   pointer-events: none;
   z-index: 0;
 }
-/* Layer 1 — bright lime "spotlight beam" that sweeps left → right with scroll.
-   Tall, narrowish radial → reads like a moving column of light across the panels. */
+/* Layer 1 — soft lime "spotlight beam" that sweeps left → right with scroll. */
 .lp-root #como-funciona .journey-bg-1 {
   background: radial-gradient(
-    22% 130% at calc(0% + var(--journey-progress, 0) * 100%) 50%,
-    oklch(0.88 0.20 130 / 0.28) 0%,
-    oklch(0.78 0.20 130 / 0.14) 28%,
-    oklch(0.78 0.20 130 / 0.04) 55%,
-    transparent 72%
+    26% 130% at calc(0% + var(--journey-progress, 0) * 100%) 50%,
+    oklch(0.88 0.20 130 / 0.12) 0%,
+    oklch(0.78 0.20 130 / 0.05) 35%,
+    transparent 70%
   );
-  mix-blend-mode: screen;
 }
-/* Layer 2 — deep green pool drifting right → left, larger & warmer for contrast */
+/* Layer 2 — deep green counterpoint drifting right → left, subtle */
 .lp-root #como-funciona .journey-bg-2 {
   background: radial-gradient(
     70% 90% at calc(95% - var(--journey-progress, 0) * 85%) 60%,
-    oklch(0.55 0.18 140 / 0.26) 0%,
-    oklch(0.45 0.14 145 / 0.10) 40%,
-    transparent 75%
+    oklch(0.55 0.18 140 / 0.10) 0%,
+    transparent 70%
   );
 }
-/* Layer 3 — wider atmospheric haze that drifts across the middle band */
+/* Layer 3 — atmospheric haze, very faint */
 .lp-root #como-funciona .journey-bg-3 {
   background: radial-gradient(
     60% 75% at calc(25% + var(--journey-progress, 0) * 55%) 45%,
-    oklch(0.45 0.12 145 / 0.16) 0%,
-    oklch(0.35 0.08 145 / 0.06) 45%,
+    oklch(0.45 0.12 145 / 0.06) 0%,
     transparent 78%
   );
 }
@@ -334,20 +329,19 @@ body {
   .lp-root #como-funciona > div:first-child::before {
     content: '';
     position: absolute;
-    left: calc(var(--journey-progress, 0) * 100% - 90px);
-    bottom: -40px;
-    width: 180px;
-    height: 180px;
+    left: calc(var(--journey-progress, 0) * 100% - 70px);
+    bottom: -50px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     background: radial-gradient(
       closest-side,
-      oklch(0.88 0.20 130 / 0.45),
+      oklch(0.88 0.20 130 / 0.20),
       transparent 70%
     );
-    filter: blur(18px);
+    filter: blur(22px);
     pointer-events: none;
     z-index: 19;
-    mix-blend-mode: screen;
   }
 }
 
@@ -774,6 +768,57 @@ body {
   margin: 4px 0 0;
   font-style: italic;
   color: oklch(0.30 0.03 150);
+}
+
+/* ---------- Dark variant — same audio bubble on dark green surfaces ---------- */
+.lp-root .bubble.yadone-audio.dark {
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, black 30%, transparent) 0%,
+    color-mix(in oklab, black 44%, transparent) 100%
+  );
+  border: 1px solid color-mix(in oklab, white 14%, transparent);
+  color: oklch(0.92 0.005 150);
+  box-shadow: 0 1px 0 oklch(1 0 0 / 0.05) inset, 0 8px 24px oklch(0 0 0 / 0.25);
+  max-width: 560px;
+}
+.lp-root .bubble.yadone-audio.dark .transcript {
+  white-space: nowrap;
+}
+.lp-root .bubble.yadone-audio.dark .who {
+  color: oklch(0.95 0.005 150);
+  opacity: 0.95;
+}
+.lp-root .bubble.yadone-audio.dark .who .av {
+  background: oklch(0.30 0.04 150);
+  color: var(--verda-lime);
+}
+.lp-root .bubble.yadone-audio.dark .audio-row {
+  color: oklch(0.78 0.018 150);
+}
+.lp-root .bubble.yadone-audio.dark .play-btn-circle {
+  background: var(--verda-lime);
+  color: oklch(0.18 0.04 150);
+  box-shadow: 0 4px 14px oklch(0.88 0.20 130 / 0.35);
+}
+.lp-root .bubble.yadone-audio.dark .play-btn-circle:hover {
+  background: oklch(0.92 0.20 130);
+  box-shadow: 0 6px 18px oklch(0.88 0.20 130 / 0.5);
+}
+.lp-root .bubble.yadone-audio.dark .waveform-flat.playing > span {
+  background: var(--verda-lime);
+}
+.lp-root .bubble.yadone-audio.dark .duration {
+  color: oklch(0.78 0.018 150);
+  opacity: 0.85;
+}
+.lp-root .bubble.yadone-audio.dark .transcript {
+  color: oklch(0.80 0.012 150);
+  opacity: 0.75;
+}
+.lp-root .bubble.yadone-audio.dark .time {
+  color: oklch(0.65 0.018 150);
+  opacity: 0.7;
 }
 
 /* Vertical placement (margin-top) so back/front layers read as one continuous thread */

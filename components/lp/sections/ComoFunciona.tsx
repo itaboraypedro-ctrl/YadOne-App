@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { WhatsappBubble } from '@/components/lp/ui/WhatsappBubble'
+import { SectionYadoneAudioBubble } from '@/components/lp/ui/SectionYadoneAudioBubble'
 import { SectionLabel } from '@/components/lp/ui/SectionLabel'
 
 if (typeof window !== 'undefined') {
@@ -111,6 +112,7 @@ function ComoFunciona() {
               <WhatsappBubble
                 type="sent"
                 sender="YADONE"
+                dark
                 message="Oi! Para crianças de 4 anos, a dose é de 5 a 10mg/kg a cada 6-8 horas. Posso separar o Ibuprofeno Infantil 100mg/mL pra você pegar amanhã de manhã?"
                 time="22:14"
               />
@@ -146,6 +148,7 @@ function ComoFunciona() {
               <WhatsappBubble
                 type="sent"
                 sender="YADONE"
+                dark
                 message="Perfeito! Seu antibiótico está separado. Uma dica: durante o tratamento, um probiótico ajuda a proteger a flora intestinal. Quer que eu inclua o Lactobacilos na sua compra?"
                 time="10:32"
               />
@@ -178,16 +181,7 @@ function ComoFunciona() {
                 boxShadow: '0 1px 0 oklch(1 0 0 / 0.05) inset',
               }}
             >
-              <WhatsappBubble
-                type="sent"
-                sender="FARMÁCIA"
-                isAudio
-                message=""
-                time="14:00"
-              />
-              <p className="italic text-xs text-[--text-muted] -mt-1 mb-2 px-1">
-                (Oi Ana! Seu antibiótico acaba em 3 dias. Quer que a gente já separe a próxima caixa?)
-              </p>
+              <SectionYadoneAudioBubble />
               <WhatsappBubble
                 type="received"
                 message="Que atencioso! Pode separar sim, obrigada 💚"

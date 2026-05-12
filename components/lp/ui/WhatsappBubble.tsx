@@ -4,17 +4,28 @@ type Props = {
   message: string
   time: string
   isAudio?: boolean
+  dark?: boolean
 }
 
-export function WhatsappBubble({ type, sender, message, time, isAudio }: Props) {
+export function WhatsappBubble({ type, sender, message, time, isAudio, dark }: Props) {
   const isSent = type === 'sent'
   // Inline styles guarantee the colors apply correctly regardless of Tailwind v4 arbitrary-value quirks.
-  const bubbleStyle = isSent
-    ? { background: 'var(--verda-lime)', color: 'oklch(0.18 0.04 150)' }
-    : { background: '#FFFFFF', color: 'oklch(0.20 0.02 150)' }
-  const avatarStyle = isSent
+  const bubbleStyle: React.CSSProperties = dark
+    ? {
+        background:
+          'linear-gradient(160deg, color-mix(in oklab, black 30%, transparent) 0%, color-mix(in oklab, black 44%, transparent) 100%)',
+        border: '1px solid color-mix(in oklab, white 14%, transparent)',
+        color: 'oklch(0.92 0.005 150)',
+        boxShadow: '0 1px 0 oklch(1 0 0 / 0.05) inset, 0 8px 24px oklch(0 0 0 / 0.25)',
+      }
+    : isSent
+      ? { background: 'var(--verda-lime)', color: 'oklch(0.18 0.04 150)' }
+      : { background: '#FFFFFF', color: 'oklch(0.20 0.02 150)' }
+  const avatarStyle: React.CSSProperties = dark
     ? { background: 'oklch(0.30 0.04 150)', color: 'var(--verda-lime)' }
-    : { background: 'oklch(0.45 0.08 150)', color: '#FFFFFF' }
+    : isSent
+      ? { background: 'oklch(0.30 0.04 150)', color: 'var(--verda-lime)' }
+      : { background: 'oklch(0.45 0.08 150)', color: '#FFFFFF' }
 
   return (
     <div className={`flex flex-col ${isSent ? 'items-end' : 'items-start'} mb-2`}>
