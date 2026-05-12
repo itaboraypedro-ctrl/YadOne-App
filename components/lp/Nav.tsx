@@ -49,7 +49,7 @@ export default function Nav() {
             Login
           </a>
           <motion.a
-            href="#agendar"
+            href="/signup"
             className="verda-btn verda-btn-dark"
             animate={{
               boxShadow: [

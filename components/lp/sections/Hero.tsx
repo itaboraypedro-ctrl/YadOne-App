@@ -132,7 +132,7 @@ export default function Hero() {
 
           <div className="flex items-center gap-5 mt-10">
             <motion.a
-              href="#agendar"
+              href="/signup"
               className="group relative inline-flex items-center gap-2 font-semibold text-base md:text-lg px-7 md:px-8 py-3 md:py-3.5 rounded-full overflow-hidden"
               style={{
                 background: "oklch(0.88 0.20 130)",

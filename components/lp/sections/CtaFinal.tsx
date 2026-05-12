@@ -25,7 +25,7 @@ function CtaFinal() {
   return (
     <section
       id="agendar"
-      className="px-6 md:px-12 lg:px-16 py-32 md:py-40 relative overflow-hidden min-h-[820px] flex items-center"
+      className="px-6 md:px-12 lg:px-16 pt-12 md:pt-16 pb-32 md:pb-40 relative overflow-hidden min-h-[820px] flex items-center"
       style={{ background: "oklch(0.10 0.025 150)" }}
     >
       {/* Layer 0 — JPG full-bleed scene */}
@@ -148,9 +148,7 @@ function CtaFinal() {
           </p>
 
           <motion.a
-            href="https://calendly.com/yadone"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/signup"
             whileHover={{ scale: 1.03, y: -2 }}
             whileTap={{ scale: 0.98 }}
             className="group relative inline-flex items-center gap-2 font-semibold text-base md:text-lg px-8 md:px-10 py-3.5 md:py-4 rounded-full overflow-hidden transition-shadow duration-300 hover:shadow-[0_22px_50px_-12px_oklch(0.88_0.20_130_/_0.65)]"

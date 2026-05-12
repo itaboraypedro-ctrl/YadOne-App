@@ -1,5 +1,5 @@
-// app/(auth)/login/page.tsx — Tela de login (Server Component que monta o form client-side).
-
+import Link from 'next/link'
+import { AuthShell } from '../AuthShell'
 import LoginForm from './LoginForm'
 
 export const metadata = {
@@ -8,23 +8,27 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-primary">Yadone</h1>
-        </div>
+    <AuthShell topRightLabel="Comece hoje mesmo" topRightHref="/signup">
+      <h1 className="text-center text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl">
+        Olá
+      </h1>
+      <p className="mt-3 text-center text-neutral-500">
+        Bem-vindo de volta ao Yadone
+      </p>
 
-        <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
-          <div className="mb-6 space-y-1.5">
-            <h2 className="text-2xl font-semibold tracking-tight">Bem-vindo de volta</h2>
-            <p className="text-sm text-muted-foreground">
-              Entre com seu email e senha para acessar suas conversas.
-            </p>
-          </div>
-
-          <LoginForm />
-        </div>
+      <div className="mt-10">
+        <LoginForm />
       </div>
-    </main>
+
+      <p className="mt-8 text-center text-sm text-neutral-500">
+        Não tem uma conta?{' '}
+        <Link
+          href="/signup"
+          className="font-semibold text-[oklch(0.45_0.16_140)] hover:underline"
+        >
+          Comece hoje mesmo
+        </Link>
+      </p>
+    </AuthShell>
   )
 }

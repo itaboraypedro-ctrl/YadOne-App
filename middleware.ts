@@ -23,6 +23,8 @@ const PUBLIC_API_PREFIXES = [
 function isPublicPath(pathname: string): boolean {
   if (pathname === '/') return true
   if (pathname === '/login' || pathname.startsWith('/login/')) return true
+  // Apenas o step 1 do cadastro é público. /signup/business exige auth.
+  if (pathname === '/signup') return true
   if (pathname === '/unauthorized' || pathname.startsWith('/unauthorized/')) return false
   for (const prefix of PUBLIC_API_PREFIXES) {
     if (pathname === prefix || pathname.startsWith(prefix + '/')) return true
