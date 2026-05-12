@@ -3,51 +3,38 @@
 import { motion } from 'framer-motion'
 
 type Row = {
-  label: string
-  bot: string
-  yadone: { before: string; bold: string; after?: string }
+  semYadone: string
+  comYadone: string
 }
 
 const rows: Row[] = [
   {
-    label: 'Memória do paciente',
-    bot: 'Nenhuma. Cada conversa começa do zero.',
-    yadone: {
-      before: 'Histórico completo. ',
-      bold: 'Sabe o nome, o tratamento, a última compra.',
-    },
+    semYadone: 'O paciente comprou. Saiu. Não voltou. Você nem sabe que ele sumiu.',
+    comYadone: 'Você sabe exatamente quem comprou, o que comprou e quando o tratamento vai acabar.',
   },
   {
-    label: 'Tom da conversa',
-    bot: 'Mecânico. Responde, não conversa.',
-    yadone: {
-      before: 'Fluido, humano, ',
-      bold: 'com a voz da sua farmácia.',
-    },
+    semYadone: 'O remédio acabou em casa. Ele esqueceu. Foi onde apareceu primeiro.',
+    comYadone: '3 dias antes do tratamento acabar, ele recebe um áudio com a voz da sua farmácia.',
   },
   {
-    label: 'Tratamento contínuo',
-    bot: 'Não acompanha. Não lembra. Não avisa.',
-    yadone: {
-      before: 'Acompanha, lembra, avisa na hora certa ',
-      bold: '— em áudio.',
-    },
+    semYadone: 'Cliente fiel virou cliente perdido. Em silêncio.',
+    comYadone: 'Cliente fiel vira receita previsível. Todo mês.',
   },
   {
-    label: 'Recompra ativa',
-    bot: 'Não existe. Espera o paciente voltar.',
-    yadone: {
-      before: 'Antecipa. Entra em contato ',
-      bold: 'antes do estoque acabar.',
-    },
+    semYadone: 'Você lembra dos 10 clientes que mais aparecem. Os outros 2.000? Não.',
+    comYadone: 'Você lembra de cada um. Nome, tratamento, última compra, o que falou da família.',
   },
   {
-    label: 'Vínculo com a farmácia',
-    bot: 'Nenhum. É um número, não uma relação.',
-    yadone: {
-      before: 'Constrói relacionamento. ',
-      bold: 'Transforma cliente em paciente fiel.',
-    },
+    semYadone: 'A farmácia fecha às 22h. As dúvidas dos pacientes não.',
+    comYadone: 'Às 23h, 4h, domingo de manhã. Sempre tem alguém respondendo com a sua voz.',
+  },
+  {
+    semYadone: 'Você acha que o cliente voltou. Não tem certeza.',
+    comYadone: 'Você vê no painel: quem voltou, quem está em risco, quanto voltou pro caixa.',
+  },
+  {
+    semYadone: 'Você compete por atenção com quem tem 800 farmacêuticos e bilhões em marketing.',
+    comYadone: 'Você ganha por proximidade — porque a sua farmácia lembrou primeiro.',
   },
 ]
 
@@ -92,8 +79,14 @@ function BotVsYadone() {
           >
             Você não precisa de um bot.
           </h2>
-          <p className="text-xl text-center mb-16" style={{ color: INK_MID }}>
+          <p className="text-xl text-center mb-6" style={{ color: INK_MID }}>
             Você precisa de presença.
+          </p>
+          <p
+            className="text-base md:text-lg text-center max-w-3xl mx-auto mb-16 leading-relaxed"
+            style={{ color: INK_MID }}
+          >
+            A diferença entre uma farmácia que perde cliente em silêncio e uma que fatura todo mês não está no atendimento. Está no que acontece depois dele.
           </p>
 
           {/* Comparison table */}
@@ -104,18 +97,17 @@ function BotVsYadone() {
             transition={{ duration: 0.6 }}
             className="max-w-5xl mx-auto"
             style={{
-              gridTemplateColumns: '1.1fr 1fr 1.2fr',
+              gridTemplateColumns: '1fr 1.2fr',
               display: 'grid',
             }}
           >
             {/* Header row */}
-            <div className="px-6 py-4" />
             <div className="px-6 py-4 flex items-center">
               <span
                 className="font-mono text-xs uppercase tracking-[0.22em]"
                 style={{ color: INK_MUTE }}
               >
-                BOT GENÉRICO
+                SEM YADONE
               </span>
             </div>
             <div
@@ -140,7 +132,7 @@ function BotVsYadone() {
                 className="font-mono text-xs uppercase tracking-[0.22em] font-bold"
                 style={{ color: LIME_DEEP }}
               >
-                YADONE
+                COM YADONE
               </span>
             </div>
 
@@ -149,26 +141,14 @@ function BotVsYadone() {
               const isLast = i === rows.length - 1
               return (
                 <motion.div
-                  key={row.label}
+                  key={i}
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
                   style={{ display: 'contents' }}
                 >
-                  {/* Label column */}
-                  <div
-                    className="px-6 py-5"
-                    style={{
-                      borderBottom: isLast ? 'none' : `1px solid ${HAIR_LIGHT}`,
-                    }}
-                  >
-                    <p className="text-sm font-medium" style={{ color: INK_DEEP }}>
-                      {row.label}
-                    </p>
-                  </div>
-
-                  {/* Bot column (muted) */}
+                  {/* Sem Yadone column (muted) */}
                   <div
                     className="px-6 py-5"
                     style={{
@@ -176,11 +156,11 @@ function BotVsYadone() {
                     }}
                   >
                     <p className="text-sm" style={{ color: INK_MUTE, opacity: 0.85 }}>
-                      {row.bot}
+                      {row.semYadone}
                     </p>
                   </div>
 
-                  {/* Yadone column (highlighted) */}
+                  {/* Com Yadone column (highlighted) */}
                   <div
                     className={`px-6 py-5 ${isLast ? 'rounded-b-2xl' : ''}`}
                     style={{
@@ -199,11 +179,7 @@ function BotVsYadone() {
                       className="text-sm font-medium leading-relaxed"
                       style={{ color: INK_DEEP }}
                     >
-                      {row.yadone.before}
-                      <strong className="font-bold" style={{ color: INK_DEEP }}>
-                        {row.yadone.bold}
-                      </strong>
-                      {row.yadone.after}
+                      {row.comYadone}
                     </p>
                   </div>
                 </motion.div>

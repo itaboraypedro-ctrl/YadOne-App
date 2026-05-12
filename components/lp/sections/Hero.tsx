@@ -103,58 +103,70 @@ export default function Hero() {
 
       {/* Top layer — Copy + doc-card — STATIC, always on top */}
       <div className="hero-grid">
-        <div className="flex flex-col justify-between max-w-[620px]">
-          <div>
-            <h1 className="hero-h1">
-              Atenda cada cliente
-              <br />
-              como se fosse
-              <br />
-              <span className="accent">o único.</span>
-            </h1>
-            <p className="hero-lede">
-              O Yadone acompanha cada paciente pelo WhatsApp — lembra o
-              tratamento, avisa na hora certa e traz de volta para comprar. Sem
-              esforço do seu time.
-            </p>
+        <div className="flex flex-col max-w-[620px]">
+          <h1 className="hero-h1">
+            Atenda cada cliente
+            <br />
+            como se fosse
+            <br />
+            <span className="accent">o único.</span>
+          </h1>
+          <p className="hero-lede">
+            O Yadone acompanha cada paciente pelo WhatsApp — lembra o
+            tratamento, avisa na hora certa e traz de volta para comprar. Sem
+            esforço do seu time.
+          </p>
 
-            <div className="flex items-center gap-2 mt-6">
-              <Image
-                src="/images/logo-tech-provider.webp"
-                width={120}
-                height={32}
-                alt="Meta Tech Provider Oficial"
-                className="opacity-80"
-              />
-              <span className="text-xs text-[--text-muted] font-mono">
-                API Oficial WhatsApp Business
-              </span>
-            </div>
+          <div className="flex items-center gap-2 mt-6">
+            <Image
+              src="/images/logo-tech-provider.webp"
+              width={96}
+              height={26}
+              alt="Meta Tech Provider Oficial"
+              className="opacity-75"
+            />
+            <span className="text-[11px] text-[--text-muted] font-mono">
+              API Oficial WhatsApp Business
+            </span>
           </div>
 
-          <div className="doc-card">
-            <div className="video">
-              <span className="play">▶</span>
-              <span className="video-cap">Intro · 42s</span>
-            </div>
-            <div className="info">
-              <div>
-                <div className="label">Como funciona · 01</div>
-                <p className="blurb">
-                  Do atendimento à recompra, o Yadone <strong>mantém o vínculo com cada
-                  cliente</strong> — com a voz e o cuidado da sua farmácia.
-                </p>
-              </div>
-              <div className="doc-row">
-                <div className="doc-name">
-                  <b>Time Yadone</b>
-                  <span>Time de Customer Success</span>
-                </div>
-                <a className="verda-btn verda-btn-lime" href="#agendar">
-                  Ver demo
-                </a>
-              </div>
-            </div>
+          <div className="flex items-center gap-5 mt-10">
+            <motion.a
+              href="#agendar"
+              className="group relative inline-flex items-center gap-2 font-semibold text-base md:text-lg px-7 md:px-8 py-3 md:py-3.5 rounded-full overflow-hidden"
+              style={{
+                background: "oklch(0.88 0.20 130)",
+                color: "oklch(0.18 0.04 150)",
+                boxShadow:
+                  "0 14px 36px -12px oklch(0.88 0.20 130 / 0.55), inset 0 1px 0 oklch(1 0 0 / 0.5)",
+              }}
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[800ms] ease-out"
+                style={{
+                  background:
+                    "linear-gradient(110deg, transparent 30%, oklch(1 0 0 / 0.45) 50%, transparent 70%)",
+                }}
+              />
+              <span className="relative">Comece hoje mesmo</span>
+              <span className="relative transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden>→</span>
+            </motion.a>
+
+            <a
+              href="#problema"
+              className="group inline-flex items-center gap-2 text-base md:text-lg text-[--text-secondary] hover:text-[--text-primary] transition-colors font-medium"
+            >
+              <span>Conhecer mais</span>
+              <span
+                aria-hidden
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </a>
           </div>
         </div>
 

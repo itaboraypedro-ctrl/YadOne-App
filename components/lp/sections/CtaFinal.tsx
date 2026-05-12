@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-const fullText = "Sua farmácia\ncomeça a fidelizar\nna primeira conversa.";
+const fullText = "49 mil farmácias\nindependentes estão perdendo pacientes.\nVocê não precisa ser uma delas.";
 
 function CtaFinal() {
   const [text, setText] = useState("");
@@ -142,8 +142,9 @@ function CtaFinal() {
               textShadow: "0 2px 16px oklch(0.10 0.025 150 / 0.7)",
             }}
           >
-            <strong className="font-semibold" style={{ color: "oklch(0.97 0.005 150)" }}>49 mil farmácias independentes</strong> estão perdendo pacientes para redes que investem em relacionamento.{' '}
-            <strong className="font-semibold" style={{ color: "oklch(0.97 0.005 150)" }}>As que estão reagindo estão reagindo agora.</strong>
+            Comece a acompanhar seus pacientes hoje.{' '}
+            <strong className="font-semibold" style={{ color: "oklch(0.97 0.005 150)" }}>Em poucos dias, o primeiro áudio sai.</strong>{' '}
+            Em 30 dias, você vê a primeira receita recuperada.
           </p>
 
           <motion.a
@@ -168,7 +169,7 @@ function CtaFinal() {
                   "linear-gradient(110deg, transparent 30%, oklch(1 0 0 / 0.45) 50%, transparent 70%)",
               }}
             />
-            <span className="relative">Agendar demonstração gratuita</span>
+            <span className="relative">Comece hoje mesmo</span>
             <span className="relative" aria-hidden>→</span>
           </motion.a>
 
@@ -179,16 +180,7 @@ function CtaFinal() {
               textShadow: "0 2px 16px oklch(0.10 0.025 150 / 0.7)",
             }}
           >
-            Sem contrato. Sem fidelidade. 30 minutos.
-          </p>
-          <p
-            className="font-mono text-[11px] uppercase tracking-[0.15em] mt-6"
-            style={{
-              color: "oklch(0.60 0.018 150)",
-              textShadow: "0 2px 12px oklch(0.10 0.025 150 / 0.7)",
-            }}
-          >
-            Projeto piloto · Vagas limitadas
+            Atendemos farmácias em todo o Brasil. Cadastro rápido. Nosso time entra em contato em até 24h.
           </p>
         </div>
       </div>

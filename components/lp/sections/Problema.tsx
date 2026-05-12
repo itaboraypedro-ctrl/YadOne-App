@@ -9,9 +9,9 @@ type CounterData = {
 }
 
 const counters: readonly CounterData[] = [
-  { id: 'c1', display: '56%',  desc: 'das farmácias independentes perderam lucro nos últimos 4 anos' },
-  { id: 'c2', display: '5,8%', desc: 'crescimento das independentes vs 13% das grandes redes' },
-  { id: 'c3', display: '5–7x', desc: 'mais caro adquirir um cliente novo do que manter um atual' },
+  { id: 'c1', display: '30%',  desc: 'dos brasileiros com doença crônica abandonam o tratamento contínuo' },
+  { id: 'c2', display: '60%',  desc: 'dos pacientes acima de 40 anos com doença crônica não aderem corretamente ao tratamento' },
+  { id: 'c3', display: '5 a 7×', desc: 'mais caro conquistar um cliente novo do que manter um atual' },
 ] as const
 
 type Pain = { idx: string; title: string; before: string; bold: string; after?: string }
@@ -22,20 +22,21 @@ const pains: Pain[] = [
     title: 'O paciente comprou. E sumiu.',
     before: '',
     bold: 'Sem follow-up, sem lembrança, sem retorno.',
-    after: ' A próxima compra vai para quem apareceu primeiro.',
+    after: ' A próxima compra vai pra quem apareceu primeiro — e quase nunca é você.',
   },
   {
     idx: '02',
-    title: 'A rede tem CRM, app e dado.',
+    title: 'A rede tem CRM, app, time de marketing.',
     before: 'Você tem WhatsApp e boa vontade. ',
     bold: 'Não é falta de esforço — é falta de ferramenta.',
+    after: ' E ferramenta não se constrói com o tempo que você não tem.',
   },
   {
     idx: '03',
     title: 'Cada recompra perdida é receita invisível.',
     before: 'Medicamento contínuo esquecido ',
     bold: 'não volta sozinho.',
-    after: ' E você nem sabe quantos pacientes já foram.',
+    after: ' E você nem sabe quantos pacientes já saíram pela porta de trás.',
   },
 ]
 
@@ -191,11 +192,14 @@ export default function Problema() {
 
         <h2
           id="problema-title"
-          className="font-serif text-[clamp(40px,6vw,84px)] font-normal tracking-tight text-center text-[--text-primary] leading-tight max-w-5xl mx-auto mb-24 text-balance relative z-10"
+          className="font-serif text-[clamp(40px,6vw,84px)] font-normal tracking-tight text-center text-[--text-primary] leading-tight max-w-5xl mx-auto mb-8 text-balance relative z-10"
         >
-          Enquanto você atende,{' '}
-          <span style={{ color: 'oklch(0.78 0.18 140)' }}>a rede grande fideliza.</span>
+          A rede grande está roubando{' '}
+          <span style={{ color: 'oklch(0.78 0.18 140)' }}>seu cliente no pós-venda.</span>
         </h2>
+        <p className="text-lg md:text-xl text-[--text-secondary] text-center max-w-3xl mx-auto mb-24 leading-relaxed relative z-10">
+          Você atende com excelência. Conhece o nome, o tratamento, a família. Mas no momento que o paciente sai da sua farmácia, ele entra no campo de batalha — e quem aparece primeiro leva a próxima venda.
+        </p>
 
         {/* Counters with trajectory line passing through them */}
         <div className="relative flex flex-col md:flex-row justify-center gap-12 md:gap-20 mb-28 text-center">
@@ -225,6 +229,10 @@ export default function Problema() {
             <Counter key={c.id} counter={c} index={i} />
           ))}
         </div>
+
+        <p className="text-lg md:text-xl text-[--text-secondary] text-center max-w-3xl mx-auto mb-16 leading-relaxed relative z-10">
+          Cada paciente que abandona o tratamento é receita que some do seu caixa — e vai para o caixa de quem lembrou dele primeiro.
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto relative z-10">
           {pains.map((pain, index) => (

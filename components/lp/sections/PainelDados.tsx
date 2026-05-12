@@ -36,15 +36,15 @@ function PainelDados() {
         >
           <SectionLabel>INTELIGÊNCIA DE DADOS</SectionLabel>
           <h2 className="font-serif text-4xl md:text-5xl mb-6 text-[--text-primary]">
-            Decida com dados.<br />Não com achismo.
+            Os números são consequência.<br />O cuidado é a causa.
           </h2>
           <p className="text-[--text-secondary] leading-relaxed mb-8">
-            Você sabe quantos pacientes não voltaram nos últimos 30 dias? Qual medicamento tem maior abandono de tratamento? Quais horários geram mais engajamento?{' '}
-            <strong className="font-semibold text-[--text-primary]">As grandes redes sabem. Agora você também sabe.</strong>
+            Você sabe quantos pacientes não voltaram nos últimos 30 dias? Qual medicamento tem maior abandono? Quais horários geram mais engajamento?{' '}
+            <strong className="font-semibold text-[--text-primary]">A rede grande sabe. Agora você também.</strong>
           </p>
           <div className="border-t border-[--accent] pt-6 mt-8">
             <p className="font-serif italic text-xl text-[--accent]">
-              Farmácia independente com inteligência de rede grande.
+              Farmácia independente com a inteligência que só a rede grande tinha.
             </p>
           </div>
         </motion.div>

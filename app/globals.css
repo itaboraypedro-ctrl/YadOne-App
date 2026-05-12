@@ -275,29 +275,80 @@ body {
   pointer-events: none;
   z-index: 0;
 }
-/* Layer 1 — soft lime orb drifting left → right with scroll */
+/* Layer 1 — bright lime "spotlight beam" that sweeps left → right with scroll.
+   Tall, narrowish radial → reads like a moving column of light across the panels. */
 .lp-root #como-funciona .journey-bg-1 {
   background: radial-gradient(
-    60% 80% at calc(10% + var(--journey-progress, 0) * 80%) 38%,
-    oklch(0.78 0.20 130 / 0.10) 0%,
-    transparent 65%
+    22% 130% at calc(0% + var(--journey-progress, 0) * 100%) 50%,
+    oklch(0.88 0.20 130 / 0.28) 0%,
+    oklch(0.78 0.20 130 / 0.14) 28%,
+    oklch(0.78 0.20 130 / 0.04) 55%,
+    transparent 72%
   );
+  mix-blend-mode: screen;
 }
-/* Layer 2 — deep green counterpoint drifting right → left */
+/* Layer 2 — deep green pool drifting right → left, larger & warmer for contrast */
 .lp-root #como-funciona .journey-bg-2 {
   background: radial-gradient(
-    55% 75% at calc(90% - var(--journey-progress, 0) * 70%) 62%,
-    oklch(0.55 0.18 140 / 0.10) 0%,
-    transparent 70%
-  );
-}
-/* Layer 3 — subtle warm haze at mid-height, drifts slowly across */
-.lp-root #como-funciona .journey-bg-3 {
-  background: radial-gradient(
-    50% 65% at calc(30% + var(--journey-progress, 0) * 40%) 50%,
-    oklch(0.42 0.10 145 / 0.06) 0%,
+    70% 90% at calc(95% - var(--journey-progress, 0) * 85%) 60%,
+    oklch(0.55 0.18 140 / 0.26) 0%,
+    oklch(0.45 0.14 145 / 0.10) 40%,
     transparent 75%
   );
+}
+/* Layer 3 — wider atmospheric haze that drifts across the middle band */
+.lp-root #como-funciona .journey-bg-3 {
+  background: radial-gradient(
+    60% 75% at calc(25% + var(--journey-progress, 0) * 55%) 45%,
+    oklch(0.45 0.12 145 / 0.16) 0%,
+    oklch(0.35 0.08 145 / 0.06) 45%,
+    transparent 78%
+  );
+}
+
+/* Progress hairline at the bottom of the pinned area — fills as the horizontal
+   scroll advances. Lime glow makes the motion unmistakable. Desktop only,
+   matching the pin (which is gated by lg:). */
+@media (min-width: 1024px) {
+  .lp-root #como-funciona > div:first-child::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: calc(var(--journey-progress, 0) * 100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(0.78 0.20 130 / 0.55) 40%,
+      oklch(0.88 0.20 130 / 0.95) 100%
+    );
+    box-shadow:
+      0 0 14px oklch(0.88 0.20 130 / 0.55),
+      0 0 32px oklch(0.88 0.20 130 / 0.30);
+    pointer-events: none;
+    z-index: 20;
+  }
+  /* Soft lime "halo" that travels with the scroll — extra cue of motion.
+     Positioned right above the progress hairline, follows progress horizontally. */
+  .lp-root #como-funciona > div:first-child::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--journey-progress, 0) * 100% - 90px);
+    bottom: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      oklch(0.88 0.20 130 / 0.45),
+      transparent 70%
+    );
+    filter: blur(18px);
+    pointer-events: none;
+    z-index: 19;
+    mix-blend-mode: screen;
+  }
 }
 
 /* Bottom-up premium fade — sits BEHIND the PNG (z:1) so the subject stays clean. */

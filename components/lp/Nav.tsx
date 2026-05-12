@@ -37,7 +37,7 @@ export default function Nav() {
           <a href="#problema" className="hover:text-[--verda-lime] transition-colors">Sobre</a>
           <a href="#problema" className="hover:text-[--verda-lime] transition-colors">Como funciona</a>
           <a href="#diferenciais" className="hover:text-[--verda-lime] transition-colors">Casos</a>
-          <a href="#dados" className="hover:text-[--verda-lime] transition-colors">Preços</a>
+          <a href="#dados" className="hover:text-[--verda-lime] transition-colors">Resultados</a>
           <a href="#agendar" className="hover:text-[--verda-lime] transition-colors">Contato</a>
         </div>
 
@@ -53,7 +53,7 @@ export default function Nav() {
           }}
           transition={{ duration: 3, repeat: Infinity }}
         >
-          <span className="dot" /> Agendar demo
+          <span className="dot" /> Comece hoje mesmo
         </motion.a>
       </div>
     </nav>

@@ -10,12 +10,13 @@ import CtaFinal from '@/components/lp/sections/CtaFinal'
 import Footer from '@/components/lp/Footer'
 
 export const metadata: Metadata = {
-  title: 'Yadone — Atenda cada cliente como se fosse o único',
+  title: 'Yadone — Cuide do seu paciente como a rede grande nunca vai conseguir',
   description:
-    'O farmacêutico digital 24h que acompanha cada paciente pelo WhatsApp. Lembra o tratamento, avisa na hora certa e traz de volta para comprar.',
+    'Acompanhamos cada paciente da sua farmácia depois da compra. Lembramos do tratamento, avisamos quando o remédio acaba e trazemos o cliente de volta. Não com a rede.',
   openGraph: {
-    title: 'Yadone — Atenda cada cliente como se fosse o único',
-    description: 'Relacionamento com pacientes via WhatsApp para farmácias independentes.',
+    title: 'Yadone — Cuide do seu paciente como a rede grande nunca vai conseguir',
+    description:
+      'Relacionamento contínuo com pacientes para farmácias independentes. Acompanhamento, lembrete, recompra ativa — tudo automatizado, com a voz da sua farmácia.',
     url: 'https://yadone.com.br',
     siteName: 'Yadone',
   },

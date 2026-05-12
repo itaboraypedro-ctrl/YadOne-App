@@ -72,7 +72,10 @@ function ComoFunciona() {
           <h2 className="font-serif text-4xl md:text-5xl mb-2 text-[--text-primary]">
             Antes, durante e depois.
           </h2>
-          <p className="text-xl text-[--text-secondary]">O ciclo completo de cuidado.</p>
+          <p className="text-xl text-[--text-secondary]">O ciclo completo de cuidado que vira faturamento.</p>
+          <p className="text-base text-[--text-secondary] max-w-2xl mx-auto mt-4 leading-relaxed">
+            Cada momento do paciente é uma oportunidade que sua farmácia está perdendo sem perceber. O Yadone está presente nos três.
+          </p>
         </div>
 
         <div
@@ -87,8 +90,8 @@ function ComoFunciona() {
                 O paciente chega antes de você abrir.
               </h3>
               <p className="text-[--text-secondary] leading-relaxed">
-                São 22h. Um cliente pergunta sobre dosagem de ibuprofeno para criança. O Yadone responde com precisão, anota o perfil e já sugere o produto certo para quando a farmácia abrir.{' '}
-                <strong className="font-semibold text-[--text-primary]">Você não perdeu a venda. E ele já te conhece.</strong>
+                São 22h. Um cliente pergunta sobre dosagem de ibuprofeno para a filha com febre. O Yadone responde com precisão clínica, anota o perfil do paciente e separa o produto certo pra quando a farmácia abrir.{' '}
+                <strong className="font-semibold text-[--text-primary]">Você não perdeu a venda. E ele já confia em você.</strong>
               </p>
             </div>
             <div
@@ -127,8 +130,8 @@ function ComoFunciona() {
                 A venda que você não sabia que ia acontecer.
               </h3>
               <p className="text-[--text-secondary] leading-relaxed">
-                O paciente comprou o antibiótico. O Yadone percebe que ele vai precisar de probiótico para proteger a flora intestinal. Ele sugere. O cliente agradece.{' '}
-                <strong className="font-semibold text-[--text-primary]">O ticket médio sobe. Sem forçar. Sem vender. Só cuidando.</strong>
+                O paciente comprou o antibiótico. O Yadone identifica que ele vai precisar de probiótico pra proteger a flora intestinal e sugere. O cliente agradece.{' '}
+                <strong className="font-semibold text-[--text-primary]">O ticket sobe. Sem forçar nada. Só cuidando do que o farmacêutico cuidaria — se tivesse tempo pra cada um.</strong>
               </p>
             </div>
             <div
@@ -162,8 +165,8 @@ function ComoFunciona() {
                 O lembrete que vale uma recompra.
               </h3>
               <p className="text-[--text-secondary] leading-relaxed">
-                10 dias depois, o tratamento acaba. O Yadone envia um áudio personalizado com a voz da farmácia lembrando o paciente.{' '}
-                <strong className="font-semibold text-[--text-primary]">Não é um spam. É o farmacêutico que você confia aparecendo na hora certa.</strong>
+                10 dias depois, o tratamento acaba. O Yadone envia um áudio personalizado com a voz da farmácia avisando o paciente. Não é um disparo. Não é um spam.{' '}
+                <strong className="font-semibold text-[--text-primary]">É o farmacêutico que ele confia, aparecendo no momento certo. E a receita volta sozinha pro seu caixa.</strong>
               </p>
             </div>
             <div

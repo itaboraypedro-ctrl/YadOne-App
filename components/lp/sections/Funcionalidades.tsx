@@ -16,28 +16,31 @@ type Feature = {
 const features: Feature[] = [
   {
     Icon: Bell,
-    impact: '+40% recompra',
+    impact: '+40% de recompra',
     title: 'Lembrete de medicamento contínuo',
-    before: 'O paciente não esquece de repor. ',
-    bold: 'Você não perde a venda para o concorrente.',
+    before: '',
+    bold: 'O paciente não esquece de repor.',
+    after: ' Você não perde a venda pra quem aparecer primeiro.',
     gradient:
       'radial-gradient(40% 40% at 100% 0%, oklch(0.85 0.20 130 / 0.22) 0%, transparent 70%)',
   },
   {
     Icon: Mic,
-    impact: '3x mais resposta que texto',
-    title: 'Áudio personalizado de follow-up',
-    before: 'A voz da sua farmácia no ouvido do cliente. ',
-    bold: 'Não é bot. É presença.',
+    impact: '3× mais resposta que texto',
+    title: 'Áudio personalizado com a voz da sua farmácia',
+    before: '',
+    bold: 'A voz que o paciente confia, no ouvido dele.',
+    after: ' Não é bot. É presença.',
     gradient:
       'radial-gradient(45% 45% at 0% 100%, oklch(0.78 0.20 135 / 0.24) 0%, transparent 65%)',
   },
   {
     Icon: Clock,
-    impact: '0 custo adicional de pessoal',
-    title: 'Atendimento 24h sem contratar',
-    before: 'Responde às 22h com a ',
-    bold: 'mesma qualidade das 10h da manhã.',
+    impact: 'Sem contratar mais ninguém',
+    title: 'Atendimento 24h com qualidade humana',
+    before: '',
+    bold: 'Responde às 22h com a mesma atenção das 10h da manhã.',
+    after: ' Sem hora extra. Sem folga. Sem feriado.',
     gradient:
       'radial-gradient(55% 30% at 50% 0%, oklch(0.88 0.18 135 / 0.20) 0%, transparent 70%)',
   },
@@ -45,18 +48,18 @@ const features: Feature[] = [
     Icon: BookOpen,
     impact: '100% do contexto preservado',
     title: 'Histórico completo de cada paciente',
-    before: 'Sabe o que comprou, quando, quanto. ',
+    before: 'Sabe o que comprou, quando, quanto, o que conversaram da última vez. ',
     bold: 'Cada conversa continua de onde parou.',
     gradient:
       'radial-gradient(38% 38% at 0% 0%, oklch(0.82 0.18 130 / 0.22) 0%, transparent 68%)',
   },
   {
     Icon: RefreshCw,
-    impact: 'Receita previsível todo mês',
+    impact: 'Receita previsível',
     title: 'Recompra ativa antes do estoque acabar',
     before: '',
     bold: 'Antecipa a necessidade do paciente.',
-    after: ' Entra em contato antes dele ir para o concorrente.',
+    after: ' Entra em contato antes dele ir procurar em outro lugar.',
     gradient:
       'radial-gradient(48% 48% at 100% 100%, oklch(0.80 0.20 135 / 0.22) 0%, transparent 65%)',
   },
@@ -66,6 +69,7 @@ const features: Feature[] = [
     title: 'Campanhas de reengajamento',
     before: 'Paciente sumiu há 60 dias? ',
     bold: 'O Yadone vai atrás com o contexto certo.',
+    after: ' Sem disparo cego.',
     gradient:
       'radial-gradient(30% 75% at 100% 50%, oklch(0.78 0.20 130 / 0.20) 0%, transparent 70%)',
   },
@@ -89,8 +93,11 @@ function Funcionalidades() {
         <h2 className="font-serif font-normal text-4xl text-center mb-2 text-[--text-primary] text-balance">
           Cada recurso existe para uma razão:
         </h2>
-        <p className="text-xl italic text-[--accent] text-center mb-16">
-          você vender mais.
+        <p className="text-xl italic text-[--accent] text-center mb-6">
+          o paciente voltar.
+        </p>
+        <p className="text-base text-[--text-secondary] text-center max-w-3xl mx-auto mb-16 leading-relaxed">
+          Não vendemos features. Vendemos pacientes que voltam todo mês. As ferramentas abaixo são como isso acontece — em silêncio, sem você precisar acompanhar.
         </p>
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
