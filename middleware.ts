@@ -23,8 +23,22 @@ const PUBLIC_API_PREFIXES = [
 function isPublicPath(pathname: string): boolean {
   if (pathname === '/') return true
   if (pathname === '/login' || pathname.startsWith('/login/')) return true
+  if (pathname === '/unauthorized' || pathname.startsWith('/unauthorized/')) return false
   for (const prefix of PUBLIC_API_PREFIXES) {
     if (pathname === prefix || pathname.startsWith(prefix + '/')) return true
+  }
+  return false
+}
+
+const OWNER_ONLY_SETTINGS_PATHS = [
+  '/settings/workspace',
+  '/settings/team',
+  '/settings/billing',
+]
+
+function isOwnerOnlySettingsPath(pathname: string): boolean {
+  for (const p of OWNER_ONLY_SETTINGS_PATHS) {
+    if (pathname === p || pathname.startsWith(p + '/')) return true
   }
   return false
 }
@@ -84,6 +98,23 @@ export async function middleware(request: NextRequest) {
     redirectUrl.pathname = '/login'
     redirectUrl.search = ''
     return NextResponse.redirect(redirectUrl)
+  }
+
+  // Settings owner-only: checa role em workspace_users.
+  if (isOwnerOnlySettingsPath(pathname)) {
+    const { data: membership } = await supabase
+      .from('workspace_users')
+      .select('role')
+      .eq('user_id', user.id)
+      .limit(1)
+      .maybeSingle()
+
+    if (!membership || membership.role !== 'owner') {
+      const redirectUrl = request.nextUrl.clone()
+      redirectUrl.pathname = '/unauthorized'
+      redirectUrl.search = ''
+      return NextResponse.redirect(redirectUrl)
+    }
   }
 
   return response

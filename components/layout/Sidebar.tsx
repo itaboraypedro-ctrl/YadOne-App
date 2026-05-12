@@ -1,147 +1,184 @@
-'use client'
+// components/layout/Sidebar.tsx — Sidebar lateral autenticada (server component).
+// Renderiza logo + nome do workspace, lista de módulos com base nas permissões
+// e rodapé com avatar/UserMenu. Apenas dados server-side (RLS) atravessam.
 
-// components/layout/Sidebar.tsx — Sidebar lateral fixa (72px) com navegação por ícones.
-
+import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { BarChart2, MessageSquare, Settings, Users } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { useAIStatus } from '@/hooks/useAIStatus'
-import type { AIStatus } from '@/lib/types/frontend'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
+import {
+  DEFAULT_PERMISSIONS,
+  MODULES,
+  type ModuleId,
+  type PermissionLevel,
+  type PermissionsMap,
+} from '@/lib/permissions'
+import { SidebarItem } from '@/components/layout/SidebarItem'
+import UserMenu from '@/components/layout/UserMenu'
 import { cn } from '@/lib/utils'
 
-interface NavItem {
-  key: string
-  label: string
-  icon: LucideIcon
-  href?: string
-  disabled?: boolean
-  tooltipLabel?: string
+type WorkspaceRole = 'owner' | 'member' | 'agent'
+
+interface WorkspaceUserRow {
+  role: string | null
+  permissions: unknown
+  workspace_id: string | null
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { key: 'conversations', label: 'Conversas', icon: MessageSquare, href: '/conversations' },
-  { key: 'contacts', label: 'Contatos', icon: Users, disabled: true, tooltipLabel: 'Contatos · Em breve' },
-  { key: 'analytics', label: 'Métricas', icon: BarChart2, disabled: true, tooltipLabel: 'Métricas · Em breve' },
-  { key: 'settings', label: 'Configurações', icon: Settings, disabled: true, tooltipLabel: 'Configurações · Em breve' },
-]
+interface WorkspaceRow {
+  name: string | null
+}
 
-function aiStatusDotClass(status: AIStatus): string {
-  switch (status) {
-    case 'active':
-      return 'bg-secondary'
-    case 'paused_global':
-      return 'bg-destructive'
-    case 'paused_channel':
-    case 'paused_conversation':
-      return 'bg-warning'
-    default:
-      return 'bg-muted-foreground'
+interface UserProfileRow {
+  full_name: string | null
+  avatar_url: string | null
+}
+
+function normalizePermissions(raw: unknown): PermissionsMap {
+  const out: PermissionsMap = { ...DEFAULT_PERMISSIONS }
+  if (!raw || typeof raw !== 'object') return out
+  const obj = raw as Record<string, unknown>
+  for (const mod of Object.keys(out) as ModuleId[]) {
+    const v = obj[mod]
+    if (v === 'view' || v === 'edit' || v === 'none') {
+      out[mod] = v
+    }
   }
+  return out
 }
 
-export function Sidebar() {
-  const pathname = usePathname()
-  const { status: aiStatus } = useAIStatus()
+function resolvePermission(
+  role: WorkspaceRole | null,
+  perms: PermissionsMap,
+  moduleId: ModuleId,
+): PermissionLevel {
+  if (role === 'owner') return 'edit'
+  // Settings: qualquer usuário autenticado vê o item raiz.
+  if (moduleId === 'settings') {
+    const stored = perms[moduleId]
+    return stored === 'none' ? 'view' : stored
+  }
+  return perms[moduleId]
+}
+
+export async function Sidebar() {
+  const supabase = await createSupabaseServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // Layout autenticado já garante redirect — defesa em profundidade.
+  if (!user) {
+    return null
+  }
+
+  const { data: wuRaw } = await supabase
+    .from('workspace_users')
+    .select('role, permissions, workspace_id')
+    .eq('user_id', user.id)
+    .maybeSingle<WorkspaceUserRow>()
+
+  const role: WorkspaceRole | null =
+    wuRaw?.role === 'owner' || wuRaw?.role === 'member' || wuRaw?.role === 'agent'
+      ? wuRaw.role
+      : null
+
+  const permissions: PermissionsMap = normalizePermissions(wuRaw?.permissions)
+
+  let workspaceName = ''
+  if (wuRaw?.workspace_id) {
+    const { data: ws } = await supabase
+      .from('workspaces')
+      .select('name')
+      .eq('id', wuRaw.workspace_id)
+      .maybeSingle<WorkspaceRow>()
+    workspaceName = ws?.name ?? ''
+  }
+
+  // user_profiles é opcional — fallback gracioso.
+  let profile: UserProfileRow | null = null
+  try {
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('full_name, avatar_url')
+      .eq('id', user.id)
+      .maybeSingle<UserProfileRow>()
+    profile = data ?? null
+  } catch {
+    profile = null
+  }
+
+  const email = user.email ?? ''
+  const fullName = profile?.full_name ?? email
+  const avatarUrl = profile?.avatar_url ?? null
+  const isOwner = role === 'owner'
 
   return (
     <aside
       className={cn(
-        'w-[72px] shrink-0 h-screen hidden md:flex flex-col items-center',
+        'w-[240px] shrink-0 h-screen hidden md:flex flex-col',
         'bg-sidebar border-r border-sidebar-border',
-        'py-4',
       )}
     >
-      {/* Logo */}
-      <Link
-        href="/conversations"
-        aria-label="Yadone"
-        className={cn(
-          'size-11 rounded-lg bg-primary text-primary-foreground',
-          'flex items-center justify-center font-bold text-xl',
-          'hover:opacity-90 transition-opacity',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
-        )}
-      >
-        Y
-      </Link>
+      {/* Topo: logo + nome do workspace */}
+      <div className="flex flex-col gap-2 px-4 pt-4 pb-3">
+        <div className="flex items-center gap-2">
+          <div className="relative size-8 shrink-0">
+            <Image
+              src="/yadone/yadone-logo.png"
+              alt="Yadone"
+              fill
+              sizes="32px"
+              className="object-contain"
+              priority
+            />
+          </div>
+          <span className="truncate text-sm font-semibold text-sidebar-foreground">
+            Yadone
+          </span>
+        </div>
+        {workspaceName ? (
+          <div className="truncate text-xs text-sidebar-foreground/60">
+            {workspaceName}
+          </div>
+        ) : null}
+      </div>
+
+      <Separator className="bg-sidebar-border" />
 
       {/* Navegação principal */}
-      <nav className="mt-6 flex flex-col items-center gap-1">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon
-          const isActive =
-            !item.disabled && !!item.href && pathname?.startsWith(item.href)
-          const showAIDot = item.key === 'conversations'
-          const tooltipLabel = item.tooltipLabel ?? item.label
+      <ScrollArea className="flex-1">
+        <nav className="flex flex-col gap-0.5 px-2 py-3">
+          {MODULES.map((mod) => {
+            const level = resolvePermission(role, permissions, mod.id)
+            return (
+              <SidebarItem
+                key={mod.id}
+                icon={mod.icon}
+                label={mod.label}
+                href={mod.route}
+                permission={level}
+              />
+            )
+          })}
+          {isOwner ? (
+            <SidebarItem
+              icon="💳"
+              label="Financeiro"
+              href="/settings/billing"
+              permission="edit"
+              indent
+            />
+          ) : null}
+        </nav>
+      </ScrollArea>
 
-          const buttonClasses = cn(
-            'relative size-11 rounded-lg flex items-center justify-center',
-            'transition-colors',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
-            isActive
-              ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-              : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60',
-            item.disabled && 'opacity-50 cursor-not-allowed hover:bg-transparent',
-          )
+      <Separator className="bg-sidebar-border" />
 
-          const inner = (
-            <>
-              <Icon className="size-5" />
-              {showAIDot && (
-                <span
-                  aria-hidden
-                  className={cn(
-                    'absolute top-1 right-1 size-2 rounded-full ring-2 ring-sidebar',
-                    aiStatusDotClass(aiStatus),
-                  )}
-                />
-              )}
-            </>
-          )
-
-          return (
-            <Tooltip key={item.key}>
-              <TooltipTrigger asChild>
-                {item.disabled || !item.href ? (
-                  <button
-                    type="button"
-                    disabled
-                    aria-label={tooltipLabel}
-                    className={buttonClasses}
-                  >
-                    {inner}
-                  </button>
-                ) : (
-                  <Link
-                    href={item.href}
-                    aria-label={tooltipLabel}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={buttonClasses}
-                  >
-                    {inner}
-                  </Link>
-                )}
-              </TooltipTrigger>
-              <TooltipContent side="right">{tooltipLabel}</TooltipContent>
-            </Tooltip>
-          )
-        })}
-      </nav>
-
-      {/* Espaço flex */}
-      <div className="flex-1" />
-
-      {/* Rodapé: ThemeToggle + slot para UserMenu */}
-      <div className="flex flex-col items-center gap-2">
-        <ThemeToggle />
-        {/* UserMenu de F02 entra aqui — por ora um div placeholder 40x40 */}
-        <div
-          aria-hidden
-          className="size-10 rounded-full bg-sidebar-accent/60"
-        />
+      {/* Rodapé: avatar + UserMenu */}
+      <div className="px-2 py-2">
+        <UserMenu fullName={fullName} email={email} avatarUrl={avatarUrl} />
       </div>
     </aside>
   )

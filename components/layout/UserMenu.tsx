@@ -1,6 +1,10 @@
 'use client'
 
-import { LogOut, User as UserIcon } from 'lucide-react'
+// components/layout/UserMenu.tsx — dropdown do usuário no rodapé da sidebar.
+// Recebe identidade via props (preenchidas no server) e expõe acessos a Configurações e Sair.
+
+import { Settings as SettingsIcon } from 'lucide-react'
+import Link from 'next/link'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,67 +13,74 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { useUser } from '@/hooks/useUser'
-import { logoutAction } from '@/app/(auth)/login/actions'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { LogoutButton } from '@/components/layout/LogoutButton'
 
-function initialFromEmail(email: string): string {
-  const trimmed = email.trim()
-  if (!trimmed) return '?'
-  return trimmed[0]!.toUpperCase()
+export interface UserMenuProps {
+  fullName: string
+  email: string
+  avatarUrl?: string | null
 }
 
-/**
- * UserMenu — para uso no rodapé da sidebar (72px). Mostra apenas o avatar;
- * abre dropdown ao clicar com info do usuário e ações.
- */
-export default function UserMenu() {
-  const { user, loading } = useUser()
+function initialsFor(name: string, email: string): string {
+  const source = (name || email || '').trim()
+  if (!source) return '?'
+  const parts = source.split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) {
+    return `${parts[0]![0]!}${parts[1]![0]!}`.toUpperCase()
+  }
+  return source[0]!.toUpperCase()
+}
 
-  const email = user?.email ?? ''
-  const initial = loading ? '…' : initialFromEmail(email)
+export default function UserMenu({ fullName, email, avatarUrl }: UserMenuProps) {
+  const initials = initialsFor(fullName, email)
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex w-full items-center justify-center rounded-md p-2 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex w-full items-center gap-2 rounded-md p-2 outline-none transition-colors hover:bg-sidebar-accent/60 focus-visible:ring-2 focus-visible:ring-sidebar-ring"
         aria-label="Menu do usuário"
       >
         <Avatar>
-          <AvatarFallback>{initial}</AvatarFallback>
+          {avatarUrl ? <AvatarImage src={avatarUrl} alt={fullName} /> : null}
+          <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
+        <div className="flex min-w-0 flex-1 flex-col items-start text-left">
+          <span className="truncate text-sm font-medium text-sidebar-foreground">
+            {fullName}
+          </span>
+          {email && email !== fullName ? (
+            <span className="truncate text-xs text-sidebar-foreground/60">
+              {email}
+            </span>
+          ) : null}
+        </div>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent side="right" align="end" className="w-56">
+      <DropdownMenuContent side="top" align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col gap-0.5">
-          <span className="truncate text-sm font-medium">
-            {email || (loading ? 'Carregando…' : 'Não autenticado')}
-          </span>
-          {user?.workspace_name ? (
+          <span className="truncate text-sm font-medium">{fullName}</span>
+          {email ? (
             <span className="truncate text-xs font-normal text-muted-foreground">
-              {user.workspace_name}
+              {email}
             </span>
           ) : null}
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem disabled>
-          <UserIcon />
-          <span>Perfil (em breve)</span>
+        <DropdownMenuItem asChild>
+          <Link href="/settings/profile">
+            <SettingsIcon />
+            <span>Configurações</span>
+          </Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <form action={logoutAction}>
-          <button
-            type="submit"
-            className="relative flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-destructive outline-hidden select-none hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
-          >
-            <LogOut />
-            <span>Sair</span>
-          </button>
-        </form>
+        <div className="px-1 py-0.5">
+          <LogoutButton variant="ghost" />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )
