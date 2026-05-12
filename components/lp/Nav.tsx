@@ -41,20 +41,28 @@ export default function Nav() {
           <a href="#agendar" className="hover:text-[--verda-lime] transition-colors">Contato</a>
         </div>
 
-        <motion.a
-          href="#agendar"
-          className="verda-btn verda-btn-dark"
-          animate={{
-            boxShadow: [
-              "0 0 0 0 oklch(0.78 0.20 130 / 0.5)",
-              "0 0 0 8px oklch(0.78 0.20 130 / 0)",
-              "0 0 0 0 oklch(0.78 0.20 130 / 0)",
-            ],
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-        >
-          <span className="dot" /> Comece hoje mesmo
-        </motion.a>
+        <div className="flex items-center gap-4">
+          <a
+            href="/login"
+            className="text-sm text-[--verda-ink-soft] hover:text-[--verda-lime] transition-colors"
+          >
+            Login
+          </a>
+          <motion.a
+            href="#agendar"
+            className="verda-btn verda-btn-dark"
+            animate={{
+              boxShadow: [
+                "0 0 0 0 oklch(0.78 0.20 130 / 0.5)",
+                "0 0 0 8px oklch(0.78 0.20 130 / 0)",
+                "0 0 0 0 oklch(0.78 0.20 130 / 0)",
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            <span className="dot" /> Comece hoje mesmo
+          </motion.a>
+        </div>
       </div>
     </nav>
   );
