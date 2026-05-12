@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,11 +18,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import {
-  DEFAULT_PERMISSIONS,
-  MODULES,
-  type PermissionsMap,
+  DEFAULT_PROFESSIONAL_PERMISSIONS,
+  PROFESSIONAL_AREAS,
+  type ProfessionalPermissions,
+  type ProfessionalPermissionArea,
   type PermissionLevel,
-  type ModuleId,
 } from '@/lib/permissions'
 import {
   inviteMember,
@@ -31,18 +32,26 @@ import {
 
 export type Member = {
   id: string
-  user_id: string
+  userId: string
   email: string
-  full_name: string | null
-  avatar_url: string | null
-  role: 'owner' | 'member' | 'agent'
-  permissions: PermissionsMap
-  invited_at: string | null
-  accepted_at: string | null
+  fullName: string | null
+  avatarUrl: string | null
+  role: 'owner' | 'professional'
+  permissions: ProfessionalPermissions
+  isActive: boolean
+}
+
+export type PendingInvite = {
+  id: string
+  email: string
+  token: string
+  createdAt: string
+  expiresAt: string
 }
 
 type Props = {
   initialMembers: Member[]
+  initialInvites: PendingInvite[]
   workspaceId: string
 }
 
@@ -57,29 +66,42 @@ const LEVELS: { id: PermissionLevel; label: string }[] = [
   { id: 'edit', label: 'Editar' },
 ]
 
-function initials(member: Member): string {
-  const source = member.full_name || member.email || '?'
+function initialsFrom(name: string | null, email: string): string {
+  const source = name || email || '?'
   const parts = source.trim().split(/\s+/).slice(0, 2)
   return parts.map((p) => p[0]?.toUpperCase() ?? '').join('') || '?'
 }
 
-export function TeamManager({ initialMembers }: Props) {
+function formatDatePtBr(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return d.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
+
+export function TeamManager({ initialMembers, initialInvites }: Props) {
+  const router = useRouter()
   const [members, setMembers] = useState<Member[]>(initialMembers)
+  const [invites] = useState<PendingInvite[]>(initialInvites)
   const [inviteEmail, setInviteEmail] = useState('')
   const [permissionsModal, setPermissionsModal] = useState<PermissionsModalState>(null)
-  const [draftPermissions, setDraftPermissions] = useState<PermissionsMap>({
-    ...DEFAULT_PERMISSIONS,
+  const [draftPermissions, setDraftPermissions] = useState<ProfessionalPermissions>({
+    ...DEFAULT_PROFESSIONAL_PERMISSIONS,
   })
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null)
   const [isPending, startTransition] = useTransition()
 
   function openInvite() {
-    if (!inviteEmail.trim()) {
+    const email = inviteEmail.trim()
+    if (!email) {
       toast.error('Informe um e-mail')
       return
     }
-    setDraftPermissions({ ...DEFAULT_PERMISSIONS })
-    setPermissionsModal({ mode: 'invite', email: inviteEmail.trim() })
+    setDraftPermissions({ ...DEFAULT_PROFESSIONAL_PERMISSIONS })
+    setPermissionsModal({ mode: 'invite', email })
   }
 
   function openEdit(member: Member) {
@@ -91,8 +113,8 @@ export function TeamManager({ initialMembers }: Props) {
     setPermissionsModal(null)
   }
 
-  function setLevel(mod: ModuleId, level: PermissionLevel) {
-    setDraftPermissions((prev) => ({ ...prev, [mod]: level }))
+  function setLevel(area: ProfessionalPermissionArea, level: PermissionLevel) {
+    setDraftPermissions((prev) => ({ ...prev, [area]: level }))
   }
 
   function submitPermissions() {
@@ -105,21 +127,7 @@ export function TeamManager({ initialMembers }: Props) {
           toast.success('Convite enviado')
           setInviteEmail('')
           setPermissionsModal(null)
-          const tempId = `pending-${Date.now()}`
-          setMembers((prev) => [
-            ...prev,
-            {
-              id: tempId,
-              user_id: tempId,
-              email: state.email,
-              full_name: null,
-              avatar_url: null,
-              role: 'member',
-              permissions: draftPermissions,
-              invited_at: new Date().toISOString(),
-              accepted_at: null,
-            },
-          ])
+          router.refresh()
         } else {
           toast.error(res.error ?? 'Erro ao convidar membro')
         }
@@ -150,6 +158,7 @@ export function TeamManager({ initialMembers }: Props) {
       if (res.success) {
         toast.success('Membro removido')
         setMemberToRemove(null)
+        router.refresh()
       } else {
         setMembers(prev)
         toast.error(res.error ?? 'Erro ao remover membro')
@@ -158,13 +167,20 @@ export function TeamManager({ initialMembers }: Props) {
     })
   }
 
+  const modalTitle =
+    permissionsModal?.mode === 'invite'
+      ? `Convite para ${permissionsModal.email}`
+      : permissionsModal?.mode === 'edit'
+        ? permissionsModal.member.fullName || permissionsModal.member.email
+        : ''
+
   return (
     <div className="space-y-8">
       <section className="space-y-4">
         <div>
           <h2 className="text-base font-semibold">Adicionar membro</h2>
           <p className="text-sm text-muted-foreground">
-            Convide alguém por e-mail e defina o nível de acesso a cada módulo.
+            Convide um profissional por e-mail e defina o nível de acesso a cada área.
           </p>
         </div>
         <div className="flex items-end gap-3">
@@ -188,36 +204,41 @@ export function TeamManager({ initialMembers }: Props) {
       <Separator />
 
       <section className="space-y-4">
-        <h2 className="text-base font-semibold">Membros ativos</h2>
+        <h2 className="text-base font-semibold">Membros</h2>
         <ul className="space-y-2">
           {members.map((member) => {
             const isOwner = member.role === 'owner'
-            const isPending = !isOwner && !member.accepted_at
             return (
               <li
                 key={member.id}
                 className="flex items-center gap-4 rounded-lg border border-border bg-card p-4"
               >
                 <Avatar>
-                  {member.avatar_url ? (
-                    <AvatarImage src={member.avatar_url} alt={member.full_name ?? member.email} />
+                  {member.avatarUrl ? (
+                    <AvatarImage
+                      src={member.avatarUrl}
+                      alt={member.fullName ?? member.email}
+                    />
                   ) : null}
-                  <AvatarFallback>{initials(member)}</AvatarFallback>
+                  <AvatarFallback>
+                    {initialsFrom(member.fullName, member.email)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium truncate">
-                      {member.full_name || member.email || 'Sem nome'}
+                      {member.fullName || member.email || 'Sem nome'}
                     </span>
                     {isOwner ? (
                       <Badge variant="default">Proprietário</Badge>
                     ) : (
-                      <Badge variant="secondary">Membro</Badge>
+                      <Badge variant="secondary">Profissional</Badge>
                     )}
-                    {isPending ? <Badge variant="outline">Convite pendente</Badge> : null}
                   </div>
-                  {member.full_name && member.email ? (
-                    <p className="text-sm text-muted-foreground truncate">{member.email}</p>
+                  {member.fullName && member.email ? (
+                    <p className="text-sm text-muted-foreground truncate">
+                      {member.email}
+                    </p>
                   ) : null}
                 </div>
                 {!isOwner ? (
@@ -227,6 +248,7 @@ export function TeamManager({ initialMembers }: Props) {
                       variant="outline"
                       size="sm"
                       onClick={() => openEdit(member)}
+                      disabled={isPending}
                     >
                       Permissões
                     </Button>
@@ -235,6 +257,7 @@ export function TeamManager({ initialMembers }: Props) {
                       variant="destructive"
                       size="sm"
                       onClick={() => setMemberToRemove(member)}
+                      disabled={isPending}
                     >
                       Remover
                     </Button>
@@ -243,24 +266,40 @@ export function TeamManager({ initialMembers }: Props) {
               </li>
             )
           })}
+
+          {invites.map((invite) => (
+            <li
+              key={invite.id}
+              className="flex items-center gap-4 rounded-lg border border-dashed border-border bg-card p-4"
+            >
+              <Avatar>
+                <AvatarFallback>{initialsFrom(null, invite.email)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-medium truncate">{invite.email}</span>
+                  <Badge variant="outline">Convite enviado</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground truncate">
+                  Expira em {formatDatePtBr(invite.expiresAt)}
+                </p>
+              </div>
+            </li>
+          ))}
         </ul>
       </section>
 
       <Dialog open={permissionsModal !== null} onOpenChange={(o) => !o && closeModal()}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {permissionsModal?.mode === 'invite'
-                ? `Convidar ${permissionsModal.email}`
-                : 'Editar permissões'}
-            </DialogTitle>
+            <DialogTitle>{modalTitle}</DialogTitle>
             <DialogDescription>
-              Defina o nível de acesso em cada módulo do Yadone.
+              Defina o nível de acesso em cada área do Yadone.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <div className="grid grid-cols-[1fr_repeat(3,minmax(0,auto))] gap-x-6 gap-y-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              <span>Módulo</span>
+              <span>Área</span>
               {LEVELS.map((l) => (
                 <span key={l.id} className="text-center">
                   {l.label}
@@ -268,22 +307,23 @@ export function TeamManager({ initialMembers }: Props) {
               ))}
             </div>
             <Separator />
-            {MODULES.map((mod) => (
+            {PROFESSIONAL_AREAS.map((area) => (
               <div
-                key={mod.id}
+                key={area.id}
                 className="grid grid-cols-[1fr_repeat(3,minmax(0,auto))] gap-x-6 items-center py-2"
               >
-                <span className="text-sm font-medium">
-                  {mod.icon} {mod.label}
-                </span>
+                <span className="text-sm font-medium">{area.label}</span>
                 {LEVELS.map((l) => (
-                  <label key={l.id} className="flex justify-center items-center cursor-pointer">
+                  <label
+                    key={l.id}
+                    className="flex justify-center items-center cursor-pointer"
+                  >
                     <input
                       type="radio"
-                      name={`perm-${mod.id}`}
+                      name={`perm-${area.id}`}
                       value={l.id}
-                      checked={draftPermissions[mod.id] === l.id}
-                      onChange={() => setLevel(mod.id, l.id)}
+                      checked={draftPermissions[area.id] === l.id}
+                      onChange={() => setLevel(area.id, l.id)}
                       className="size-4 cursor-pointer"
                       disabled={isPending}
                     />
@@ -310,7 +350,7 @@ export function TeamManager({ initialMembers }: Props) {
             <DialogDescription>
               Tem certeza?{' '}
               <span className="font-medium text-foreground">
-                {memberToRemove?.full_name || memberToRemove?.email}
+                {memberToRemove?.fullName || memberToRemove?.email}
               </span>{' '}
               perderá acesso imediatamente.
             </DialogDescription>

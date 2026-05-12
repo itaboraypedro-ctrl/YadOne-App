@@ -11,7 +11,7 @@ import {
 export interface ApiAuthContext {
   user: { id: string; email: string | null }
   workspace_id: string
-  role: 'owner' | 'agent'
+  role: 'owner' | 'professional'
   svc: SupabaseClient
 }
 
@@ -45,7 +45,7 @@ export async function getApiAuthContext(): Promise<ApiAuthResult> {
     }
   }
 
-  const role: 'owner' | 'agent' = ws.role === 'owner' ? 'owner' : 'agent'
+  const role: 'owner' | 'professional' = ws.role === 'owner' ? 'owner' : 'professional'
 
   return {
     ok: true,

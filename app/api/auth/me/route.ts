@@ -40,7 +40,7 @@ export async function GET() {
   const ws = Array.isArray(data.workspaces) ? data.workspaces[0] : data.workspaces
   const workspaceName = (ws as { name?: string } | null | undefined)?.name ?? ''
 
-  const role: CurrentUser['role'] = data.role === 'owner' ? 'owner' : 'agent'
+  const role: CurrentUser['role'] = data.role === 'owner' ? 'owner' : 'professional'
 
   const payload: CurrentUser = {
     user_id: user.id,

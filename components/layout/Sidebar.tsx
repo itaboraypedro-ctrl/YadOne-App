@@ -3,27 +3,34 @@
 // e rodapé com avatar/UserMenu. Apenas dados server-side (RLS) atravessam.
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
-  DEFAULT_PERMISSIONS,
+  DEFAULT_PROFESSIONAL_PERMISSIONS,
   MODULES,
   type ModuleId,
   type PermissionLevel,
   type PermissionsMap,
+  type ProfessionalPermissions,
+  type WorkspaceRole,
 } from '@/lib/permissions'
 import { SidebarItem } from '@/components/layout/SidebarItem'
 import UserMenu from '@/components/layout/UserMenu'
 import { cn } from '@/lib/utils'
 
-type WorkspaceRole = 'owner' | 'member' | 'agent'
-
 interface WorkspaceUserRow {
+  id: string
   role: string | null
-  permissions: unknown
   workspace_id: string | null
+}
+
+interface ProfessionalPermissionsRow {
+  agenda: PermissionLevel | null
+  crm: PermissionLevel | null
+  conversas: PermissionLevel | null
+  relatorios: PermissionLevel | null
+  produtos: PermissionLevel | null
 }
 
 interface WorkspaceRow {
@@ -35,31 +42,43 @@ interface UserProfileRow {
   avatar_url: string | null
 }
 
-function normalizePermissions(raw: unknown): PermissionsMap {
-  const out: PermissionsMap = { ...DEFAULT_PERMISSIONS }
-  if (!raw || typeof raw !== 'object') return out
-  const obj = raw as Record<string, unknown>
-  for (const mod of Object.keys(out) as ModuleId[]) {
-    const v = obj[mod]
-    if (v === 'view' || v === 'edit' || v === 'none') {
-      out[mod] = v
-    }
-  }
-  return out
+function normalizeLevel(v: unknown): PermissionLevel {
+  return v === 'view' || v === 'edit' || v === 'none' ? v : 'none'
 }
 
-function resolvePermission(
-  role: WorkspaceRole | null,
-  perms: PermissionsMap,
-  moduleId: ModuleId,
-): PermissionLevel {
-  if (role === 'owner') return 'edit'
-  // Settings: qualquer usuário autenticado vê o item raiz.
-  if (moduleId === 'settings') {
-    const stored = perms[moduleId]
-    return stored === 'none' ? 'view' : stored
+function buildProfessionalPermissions(
+  row: ProfessionalPermissionsRow | null,
+): ProfessionalPermissions {
+  if (!row) return { ...DEFAULT_PROFESSIONAL_PERMISSIONS }
+  return {
+    agenda: normalizeLevel(row.agenda),
+    crm: normalizeLevel(row.crm),
+    conversas: normalizeLevel(row.conversas),
+    relatorios: normalizeLevel(row.relatorios),
+    produtos: normalizeLevel(row.produtos),
   }
-  return perms[moduleId]
+}
+
+function permissionsFor(
+  role: WorkspaceRole | null,
+  profPerms: ProfessionalPermissions,
+): PermissionsMap {
+  if (role === 'owner') {
+    return {
+      chat: 'edit',
+      flows: 'edit',
+      ai_config: 'edit',
+      crm: 'edit',
+      settings: 'edit',
+    }
+  }
+  return {
+    chat: profPerms.conversas,
+    crm: profPerms.crm,
+    flows: 'none',
+    ai_config: 'none',
+    settings: 'view',
+  }
 }
 
 export async function Sidebar() {
@@ -75,16 +94,27 @@ export async function Sidebar() {
 
   const { data: wuRaw } = await supabase
     .from('workspace_users')
-    .select('role, permissions, workspace_id')
+    .select('id, role, workspace_id')
     .eq('user_id', user.id)
+    .eq('is_active', true)
     .maybeSingle<WorkspaceUserRow>()
 
   const role: WorkspaceRole | null =
-    wuRaw?.role === 'owner' || wuRaw?.role === 'member' || wuRaw?.role === 'agent'
+    wuRaw?.role === 'owner' || wuRaw?.role === 'professional'
       ? wuRaw.role
       : null
 
-  const permissions: PermissionsMap = normalizePermissions(wuRaw?.permissions)
+  let profPerms: ProfessionalPermissions = { ...DEFAULT_PROFESSIONAL_PERMISSIONS }
+  if (role === 'professional' && wuRaw?.id) {
+    const { data: ppRow } = await supabase
+      .from('professional_permissions')
+      .select('agenda, crm, conversas, relatorios, produtos')
+      .eq('workspace_user_id', wuRaw.id)
+      .maybeSingle<ProfessionalPermissionsRow>()
+    profPerms = buildProfessionalPermissions(ppRow ?? null)
+  }
+
+  const permissions: PermissionsMap = permissionsFor(role, profPerms)
 
   let workspaceName = ''
   if (wuRaw?.workspace_id) {
@@ -150,8 +180,8 @@ export async function Sidebar() {
       {/* Navegação principal */}
       <ScrollArea className="flex-1">
         <nav className="flex flex-col gap-0.5 px-2 py-3">
-          {MODULES.map((mod) => {
-            const level = resolvePermission(role, permissions, mod.id)
+          {MODULES.map((mod: { id: ModuleId; label: string; icon: string; route: string }) => {
+            const level = permissions[mod.id]
             return (
               <SidebarItem
                 key={mod.id}

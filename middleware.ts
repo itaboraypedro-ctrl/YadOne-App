@@ -36,8 +36,20 @@ const OWNER_ONLY_SETTINGS_PATHS = [
   '/settings/billing',
 ]
 
+const BLOCKED_FOR_PROFESSIONAL_PATHS = [
+  '/flows',
+  '/ai-config',
+]
+
 function isOwnerOnlySettingsPath(pathname: string): boolean {
   for (const p of OWNER_ONLY_SETTINGS_PATHS) {
+    if (pathname === p || pathname.startsWith(p + '/')) return true
+  }
+  return false
+}
+
+function isBlockedForProfessionalPath(pathname: string): boolean {
+  for (const p of BLOCKED_FOR_PROFESSIONAL_PATHS) {
     if (pathname === p || pathname.startsWith(p + '/')) return true
   }
   return false
@@ -100,16 +112,29 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Settings owner-only: checa role em workspace_users.
-  if (isOwnerOnlySettingsPath(pathname)) {
+  // Owner-only settings + paths bloqueados pra professional: ambos requerem role.
+  const needsRoleCheck =
+    isOwnerOnlySettingsPath(pathname) || isBlockedForProfessionalPath(pathname)
+
+  if (needsRoleCheck) {
     const { data: membership } = await supabase
       .from('workspace_users')
       .select('role')
       .eq('user_id', user.id)
+      .eq('is_active', true)
       .limit(1)
       .maybeSingle()
 
-    if (!membership || membership.role !== 'owner') {
+    const role = membership?.role
+
+    if (isOwnerOnlySettingsPath(pathname) && role !== 'owner') {
+      const redirectUrl = request.nextUrl.clone()
+      redirectUrl.pathname = '/unauthorized'
+      redirectUrl.search = ''
+      return NextResponse.redirect(redirectUrl)
+    }
+
+    if (isBlockedForProfessionalPath(pathname) && role === 'professional') {
       const redirectUrl = request.nextUrl.clone()
       redirectUrl.pathname = '/unauthorized'
       redirectUrl.search = ''

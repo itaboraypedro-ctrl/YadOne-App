@@ -12,7 +12,7 @@ import {
   type PermissionsMap,
 } from '@/lib/permissions'
 
-export type WorkspaceRole = 'owner' | 'member' | 'agent'
+export type WorkspaceRole = 'owner' | 'professional'
 
 export interface UseWorkspacePermissionsResult {
   role: WorkspaceRole | null
@@ -78,7 +78,7 @@ export function useWorkspacePermissions(): UseWorkspacePermissionsResult {
         }
         const r = data.role as string
         const normalizedRole: WorkspaceRole | null =
-          r === 'owner' || r === 'member' || r === 'agent' ? r : null
+          r === 'owner' || r === 'professional' ? r : null
         setRole(normalizedRole)
         setPermissions(normalizePermissions(data.permissions))
       } finally {

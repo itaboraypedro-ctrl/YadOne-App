@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import type { WorkspaceRole } from '@/lib/permissions'
 
-type Role = 'owner' | 'member' | 'agent' | null
+type Role = WorkspaceRole | null
 
 type NavItem = {
   href: string

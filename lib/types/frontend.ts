@@ -50,7 +50,7 @@ export interface CurrentUser {
   email: string
   workspace_id: string
   workspace_name: string
-  role: 'owner' | 'agent'
+  role: 'owner' | 'professional'
 }
 
 export interface ConversationsListResponse {
